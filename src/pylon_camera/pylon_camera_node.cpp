@@ -518,7 +518,13 @@ void PylonCameraNode::spin()
                     img_raw_msg_,
                     img_raw_msg_.encoding);
             pinhole_model_->fromCameraInfo(camera_info_manager_->getCameraInfo());
+            if (img_raw_msg_.encoding == sensor_msgs::image_encodings::BAYER_BGGR8)
+            {
+                cv_bridge_img_rect_->encoding = sensor_msgs::image_encodings::BGR8;
+                cv::cvtColor(cv_img_raw->image, cv_img_raw->image, cv::COLOR_BayerBG2RGB);
+            }
             pinhole_model_->rectifyImage(cv_img_raw->image, cv_bridge_img_rect_->image);
+
             img_rect_pub_->publish(*cv_bridge_img_rect_);
         }
     }
